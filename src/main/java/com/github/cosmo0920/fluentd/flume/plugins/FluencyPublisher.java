@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import com.github.cosmo0920.fluentd.flume.plugins.parser.EventParser;
 import com.github.cosmo0920.fluentd.flume.plugins.parser.PlainTextParser;
 import com.github.cosmo0920.fluentd.flume.plugins.parser.JsonParser;
+import java.util.Map;
 
 class FluencyPublisher {
 	private Fluency fluency;
@@ -59,11 +60,18 @@ class FluencyPublisher {
 	public void publish(Event event) throws IOException, RuntimeException {
 		String body = new String(event.getBody(), StandardCharsets.UTF_8);
 		FlumeEventHandler handler = new FlumeEventHandler(event);
+		Map<String, Object> eventmap = parser.parse(body);
+		if (handler.containsHeader("category")) {
+			eventmap.put("category", handler.getHeaderString("category"));
+		} else {
+			eventmap.put("category", "none");
+		}
+
 		if (handler.containsHeader(HEADER_TIMESTAMP)) {
 			long time = handler.getHeader(HEADER_TIMESTAMP) / 1000;
-			fluency.emit(tag, time, parser.parse(body));
+			fluency.emit(tag, time, eventmap);
 		} else {
-			fluency.emit(tag, parser.parse(body));
+			fluency.emit(tag, eventmap);
 		}
 	}
 

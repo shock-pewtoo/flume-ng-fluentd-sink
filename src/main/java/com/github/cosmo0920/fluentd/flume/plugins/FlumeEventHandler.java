@@ -18,4 +18,9 @@ public class FlumeEventHandler {
         Map<String, String> headerMap = event.getHeaders();
         return Long.parseLong(headerMap.get(headerName));
     }
+
+    public String getHeaderString(String headerName) {
+        Map<String, String> headerMap = event.getHeaders();
+        return headerMap.get(headerName);
+    }
 }
