@@ -61,6 +61,8 @@ class FluencyPublisher {
 		String body = new String(event.getBody(), StandardCharsets.UTF_8);
 		FlumeEventHandler handler = new FlumeEventHandler(event);
 		Map<String, Object> eventmap = parser.parse(body);
+
+        // Pull out the category header and put it in the event.
 		if (handler.containsHeader("category")) {
 			eventmap.put("category", handler.getHeaderString("category"));
 		} else {
